@@ -1,418 +1,667 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" class="scroll-smooth" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>L'Aventure de l'IA : Passé, Présent, Futur avec Koncept Assistant</title>
-    <link rel="icon" type="image/png" href="favicon-96x96.png" sizes="96x96" />
-    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-    <link rel="shortcut icon" href="favicon.ico" />
-    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
-    <link rel="manifest" href="site.webmanifest" />
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <title>Alex Koncept | L'Aventure de l'IA</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    },
+                    colors: {
+                        dark: 'var(--color-dark)',
+                        light: 'var(--color-light)',
+                        text_primary: 'var(--color-text-primary)',
+                        text_secondary: 'var(--color-text-secondary)',
+                        glass: 'var(--color-glass)',
+                        glassBorder: 'var(--color-glass-border)',
+                        accent: 'var(--color-accent)',
+                        secondary: 'var(--color-secondary)'
+                    },
+                    backgroundImage: {
+                        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- GSAP for Animation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <style>
         :root {
-            --bg-body: #f4f7f9;
-            --text-color: #333;
-            --header-bg: #fff;
-            --header-shadow: rgba(0, 0, 0, 0.08);
-            --accent-color: #007bff;
-            --accent-color-dark: #0056b3;
-            --card-bg: #fff;
-            --alternate-bg: #e9ecef;
-            --theme-toggle-icon: "☀️";
+            --color-accent: #00f0ff; /* Cyan */
+            --color-secondary: #7000ff; /* Violet */
         }
-        body.dark-mode {
-            --bg-body: #1a1a1a;
-            --text-color: #e0e0e0;
-            --header-bg: #252525;
-            --header-shadow: rgba(255, 255, 255, 0.08);
-            --accent-color: #61dafb;
-            --accent-color-dark: #3aa8c7;
-            --card-bg: #2c2c2c;
-            --alternate-bg: #222;
+
+        html[data-theme='dark'] {
+            --color-dark: #030305;
+            --color-light: #ffffff;
+            --color-text-primary: #ffffff;
+            --color-text-secondary: #a0aec0; /* gray-400 */
+            --color-glass: rgba(255, 255, 255, 0.02);
+            --color-glass-border: rgba(255, 255, 255, 0.05);
             --theme-toggle-icon: "🌙";
         }
-        body { margin: 0; font-family: 'Roboto', sans-serif; background-color: var(--bg-body); color: var(--text-color); transition: background-color 0.3s, color 0.3s; }
-        header { background-color: var(--header-bg); box-shadow: 0 2px 10px var(--header-shadow); position: sticky; top: 0; z-index: 1000; transition: background-color 0.3s; }
-        nav { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 0 1rem; height: 70px; }
-        .logo a { color: var(--accent-color); font-family: 'Montserrat', sans-serif; font-weight: 600; text-decoration: none; font-size: 1.5rem; }
-        .nav-links { display: flex; list-style: none; gap: 1.5rem; margin: 0; padding: 0; }
-        .nav-links a { color: var(--text-color); text-decoration: none; font-weight: 500; transition: color 0.2s; }
-        .nav-links a:hover { color: var(--accent-color); }
-        .burger { display: none; cursor: pointer; }
-        .burger div { width: 25px; height: 3px; background-color: var(--text-color); margin: 5px; transition: all 0.3s ease; }
-        .common-toggle-button { background: var(--card-bg); color: var(--text-color); border: 1px solid #ccc; border-radius: 50%; width: 40px; height: 40px; font-size: 1.2rem; cursor: pointer; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: background 0.3s, color 0.3s, border-color 0.3s, opacity 0.3s; z-index: 1000; padding: 0; }
-        .theme-toggle::before { content: var(--theme-toggle-icon); }
-        .top-right-controls { position: fixed; top: 1rem; right: 1rem; display: flex; align-items: center; gap: 8px; z-index: 1001; }
-        .lang-switcher { display: flex; gap: 5px; }
-        .lang-switcher button { opacity: 0.6; }
-        .lang-switcher button.lang-active { opacity: 1; border-color: var(--accent-color) !important; }
-        main { padding: 2rem 1rem; }
-        .content-section { max-width: 1000px; margin: 4rem auto; }
-        .content-section.alternate-bg { background-color: var(--alternate-bg); padding: 3rem 1.5rem; border-radius: 12px; margin-top: 4rem; margin-bottom: 4rem; }
-        h1, h2, h3 { font-family: 'Montserrat', sans-serif; color: var(--text-color); }
-        h1 { font-size: 2.8rem; text-align: center; }
-        h2 { font-size: 2.2rem; text-align: center; margin-bottom: 2.5rem; }
-        p { line-height: 1.7; }
-        #hero { text-align: center; padding: 4rem 0; }
-        .cta-button { display: inline-block; background-color: var(--accent-color); color: #fff; padding: 12px 25px; border-radius: 25px; text-decoration: none; font-weight: bold; margin-top: 1rem; transition: background-color 0.2s; }
-        .cta-button:hover { background-color: var(--accent-color-dark); }
-        .timeline { position: relative; padding: 2rem 0; }
-        .timeline::before { content: ''; position: absolute; left: 20px; top: 0; bottom: 0; width: 4px; background: var(--accent-color); border-radius: 2px; }
-        .timeline-item { position: relative; margin-bottom: 2rem; padding-left: 50px; }
-        .timeline-icon { position: absolute; left: 0; top: 0; transform: translateX(-50%); width: 40px; height: 40px; background: var(--accent-color); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 1; }
-        .timeline-content { background: var(--card-bg); padding: 1.5rem; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
-        .grid-item.full-width { grid-column: 1 / -1; }
-        .future-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; }
-        .card { background: var(--card-bg); padding: 1.5rem; border-radius: 8px; text-align: center; }
-        .card-icon { font-size: 2.5rem; color: var(--accent-color); margin-bottom: 1rem; }
-        #demo-ia .demo-intro, #demo-ia .model-info { text-align: center; max-width: 600px; margin: 0 auto 1.5rem auto; }
-        .chatbot-container { max-width: 600px; margin: 0 auto; border: 1px solid #ccc; border-radius: 8px; background: var(--card-bg); display: flex; flex-direction: column; height: 450px; }
-        .chatbox { flex-grow: 1; overflow-y: auto; padding: 1rem; }
-        .chat-message { margin-bottom: 1rem; display: flex; flex-direction: column; }
-        .chat-message.user { align-items: flex-end; }
-        .chat-message.bot { align-items: flex-start; }
-        .chat-message div { max-width: 80%; padding: 0.75rem; border-radius: 12px; }
-        .chat-message.user div { background: var(--accent-color); color: #fff; border-bottom-right-radius: 2px; }
-        .chat-message.bot div { background: var(--alternate-bg); border-bottom-left-radius: 2px; }
-        .chat-input-area { display: flex; padding: 0.5rem; border-top: 1px solid #ccc; }
-        #userInput { flex-grow: 1; border: none; padding: 0.75rem; background: transparent; color: var(--text-color); outline: none; }
-        #sendMessageBtn { background: var(--accent-color); color: #fff; border: none; padding: 0.75rem 1rem; border-radius: 5px; cursor: pointer; }
-        footer { text-align: center; padding: 2rem; margin-top: 2rem; background: var(--header-bg); }
-        @media (max-width: 768px) {
-            .nav-links { position: fixed; right: 0; top: 70px; background: var(--header-bg); height: 100vh; width: 60%; flex-direction: column; align-items: center; justify-content: flex-start; gap: 3rem; padding-top: 3rem; transform: translateX(100%); transition: transform 0.5s ease-in; }
-            .nav-links.nav-active { transform: translateX(0%); }
-            .burger { display: block; }
-            .grid-container { grid-template-columns: 1fr; }
+        
+        html[data-theme='light'] {
+            --color-dark: #f8f9fa;
+            --color-light: #030305;
+            --color-text-primary: #030305;
+            --color-text-secondary: #4a5568; /* gray-600 */
+            --color-glass: rgba(0, 0, 0, 0.02);
+            --color-glass-border: rgba(0, 0, 0, 0.05);
+            --theme-toggle-icon: "☀️";
         }
+
+        body {
+            background-color: var(--color-dark);
+            color: var(--color-text-primary);
+            overflow-x: hidden;
+            cursor: none; /* Custom cursor */
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--color-dark); }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--color-accent); }
+
+        /* Custom Cursor */
+        .cursor-dot,
+        .cursor-outline {
+            position: fixed; top: 0; left: 0;
+            transform: translate(-50%, -50%);
+            border-radius: 50%; z-index: 9999; pointer-events: none;
+        }
+        .cursor-dot { width: 8px; height: 8px; background-color: var(--color-accent); }
+        .cursor-outline { width: 40px; height: 40px; border: 1px solid var(--color-accent); transition: width 0.2s, height 0.2s, background-color 0.2s; }
+        
+        /* Utilities */
+        .glass-panel {
+            background: var(--color-glass);
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--color-glass-border);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+        .text-gradient-accent {
+            background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-secondary) 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
+        /* Grid Hover Effects */
+        .bento-card:hover { border-color: rgba(0, 240, 255, 0.3); transform: translateY(-5px); transition: transform 0.3s ease, border-color 0.3s ease;}
+
+        /* Background Canvas */
+        canvas#webgl-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.6; }
+        html[data-theme='light'] canvas#webgl-bg { opacity: 0.3; }
+
+        /* Theme Toggle Button */
+        .theme-toggle::before { content: var(--theme-toggle-icon); font-size: 1.2rem; }
+        .lang-switcher button.lang-active { border-color: var(--color-accent) !important; opacity: 1; }
+
+        /* Timeline */
+        .timeline { position: relative; }
+        .timeline::before { content: ''; position: absolute; left: 20px; top: 0; bottom: 0; width: 2px; background: var(--color-accent); }
+        .timeline-item { position: relative; padding-left: 60px; margin-bottom: 2.5rem; }
+        .timeline-icon { position: absolute; left: 0; top: 5px; transform: translateX(-50%); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 1; background-color: var(--color-secondary); color: white; }
+    
+        /* --- CSS du Chatbot --- */
+        .chatbot-toggle {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1000;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+        .chatbot-toggle:hover { transform: scale(1.1); }
+        .chatbot-window {
+            position: fixed;
+            bottom: calc(2rem + 70px);
+            right: 2rem;
+            width: 350px;
+            height: 500px;
+            border-radius: 16px;
+            z-index: 1000;
+            display: none; /* Caché par défaut */
+            flex-direction: column;
+            overflow: hidden;
+            transform-origin: bottom right;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+        .chatbot-window.open {
+            display: flex;
+            animation:-in 0.3s ease forwards;
+        }
+        @keyframes-in {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .chatbot-header {
+            padding: 1rem;
+            font-weight: bold;
+            border-bottom: 1px solid var(--color-glass-border);
+        }
+        .chat-messages {
+            flex-grow: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        .chat-message {
+            max-width: 80%;
+            padding: 0.5rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        .user-message {
+            align-self: flex-end;
+            background-color: var(--color-secondary); /* MODIFIÉ: Violet */
+            color: var(--color-light); /* MODIFIÉ: Texte clair */
+        }
+        .bot-message {
+            align-self: flex-start;
+            background-color: var(--color-accent); /* MODIFIÉ: Cyan */
+            color: var(--color-dark); /* MODIFIÉ: Texte sombre pour lisibilité */
+        }
+        .chat-form {
+            display: flex;
+            border-top: 1px solid var(--color-glass-border);
+            padding: 0.5rem;
+            gap: 0.5rem;
+        }
+        .chat-form input {
+            flex-grow: 1;
+            background: transparent;
+            border: 1px solid var(--color-glass-border);
+            border-radius: 9999px;
+            padding: 0.5rem 1rem;
+            color: var(--color-text-primary);
+            outline: none;
+        }
+        .chat-form input:focus { border-color: var(--color-accent); }
+        .chat-form button {
+            background-color: var(--color-accent);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            color: var(--color-dark);
+            cursor: pointer;
+        }
+        /* --- FIN CSS Chatbot --- */
     </style>
 </head>
 <body>
 
-    <div class="top-right-controls">
-        <div class="lang-switcher">
-            <button id="lang-fr-btn" class="common-toggle-button" aria-label="Passer en Français">🇫🇷</button>
-            <button id="lang-en-btn" class="common-toggle-button" aria-label="Switch to English">🇬🇧</button>
+    <!-- Custom Cursor Elements -->
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+
+    <!-- Background Canvas -->
+    <canvas id="webgl-bg"></canvas>
+    
+    <!-- Top Right Controls -->
+    <div class="fixed top-4 right-4 z-50 flex gap-2">
+        <div id="lang-switcher" class="lang-switcher flex gap-2">
+             <button id="lang-fr-btn" class="glass-panel w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-opacity opacity-60 hover:opacity-100">FR</button>
+             <button id="lang-en-btn" class="glass-panel w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-opacity opacity-60 hover:opacity-100">EN</button>
         </div>
-        <button id="theme-toggle" class="theme-toggle common-toggle-button" aria-label="Changer le thème" data-key="theme_toggle_label"></button>
+        <button id="theme-toggle" class="theme-toggle glass-panel w-10 h-10 rounded-full"></button>
     </div>
 
-    <header>
-        <nav>
-            <div class="logo">
-                <a href="#" data-key="nav_logo">IA Explorée</a>
+    <!-- Navigation -->
+    <nav class="fixed w-full z-40 top-0 left-0 px-6 py-4 transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto flex justify-between items-center glass-panel rounded-full px-6 py-3">
+            <a href="#" class="text-2xl font-display font-bold tracking-tighter">Alex<span class="text-accent">Koncept</span></a>
+            <div class="hidden md:flex space-x-8 text-sm font-medium text-text_secondary">
+                <a href="#premices" class="hover:text-accent transition-colors" data-key="nav_genesis">Prémices</a>
+                <a href="#actuel" class="hover:text-accent transition-colors" data-key="nav_current">Aujourd'hui</a>
+                <a href="#avenir" class="hover:text-accent transition-colors" data-key="nav_future">Avenir</a>
+                <a href="#contact" class="hover:text-accent transition-colors" data-key="nav_contact">Contact</a>
             </div>
-            <ul class="nav-links">
-                <li><a href="#premices" data-key="nav_genesis">Prémices & Genèse</a></li>
-                <li><a href="#actuel" data-key="nav_current">État Actuel</a></li>
-                <li><a href="#demo-ia" data-key="nav_demo">Koncept Assistant</a></li>
-                <li><a href="#avenir" data-key="nav_future">Avenir</a></li>
-                <li><a href="#ressources" data-key="nav_resources">Ressources</a></li>
-            </ul>
-            <div class="burger">
-                <div class="line1"></div><div class="line2"></div><div class="line3"></div>
-            </div>
-        </nav>
-    </header>
+            <a href="#contact" class="bg-light text-dark px-5 py-2 rounded-full font-bold text-sm hover:bg-accent hover:text-white transition-colors duration-300" data-key="nav_cta">
+                Discutons
+            </a>
+        </div>
+    </nav>
 
-    <main>
-        <section id="hero">
-            <div class="hero-content">
-                <h1 data-key="hero_title">L'Intelligence Artificielle : <br>Découverte d'un Monde en Évolution</h1>
-                <p data-key="hero_subtitle">Explorez les origines, comprenez le présent, anticipez l'avenir de l'IA et discutez avec Koncept Assistant.</p>
-                <a href="#premices" class="cta-button" data-key="hero_cta">Commencer l'exploration</a>
+    <!-- Hero Section -->
+    <section class="relative h-screen flex items-center justify-center px-6 overflow-hidden">
+        <div class="absolute inset-0 z-0 pointer-events-none">
+            <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-secondary/20 rounded-full blur-[120px]"></div>
+            <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent/10 rounded-full blur-[120px]"></div>
+        </div>
+        <div class="relative z-10 max-w-5xl mx-auto text-center">
+            <h1 class="font-display text-6xl md:text-8xl lg:text-9xl font-bold tracking-tighter leading-tight mb-6">
+                <span class="block hero-text" data-key="hero_title_1">L'AVENTURE DE L'</span>
+                <span class="block hero-text text-gradient-accent" data-key="hero_title_2">INTELLIGENCE ARTIFICIELLE</span>
+            </h1>
+            <p class="max-w-2xl mx-auto text-text_secondary text-lg md:text-xl leading-relaxed hero-sub mb-10" data-key="hero_subtitle">
+                De ses origines théoriques à son futur prometteur, une exploration complète du monde fascinant de l'IA.
+            </p>
+            <div class="flex flex-col md:flex-row justify-center gap-4 hero-btn">
+                <a href="#premices" class="group relative px-8 py-4 bg-light text-dark font-bold rounded-lg overflow-hidden">
+                    <span class="relative z-10 group-hover:text-white transition-colors duration-300" data-key="hero_cta">Commencer l'Exploration</span>
+                    <div class="absolute inset-0 bg-accent transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300 ease-out"></div>
+                </a>
             </div>
-        </section>
-
-        <section id="premices" class="content-section">
-            <h2 data-key="genesis_title"><i class="fas fa-history"></i> Prémices et Genèse de l'IA</h2>
+        </div>
+    </section>
+    
+    <!-- Timeline Section -->
+    <section id="premices" class="py-24 px-6 relative">
+        <div class="max-w-4xl mx-auto">
+            <div class="mb-16 text-center">
+                <h2 class="font-display text-4xl md:text-6xl font-bold mb-4" data-key="genesis_title">Prémices & <span class="text-text_secondary">Genèse</span></h2>
+                <div class="h-1 w-20 bg-accent mx-auto"></div>
+            </div>
             <div class="timeline">
                 <div class="timeline-item">
-                    <div class="timeline-icon"><i class="fas fa-lightbulb"></i></div>
-                    <div class="timeline-content">
-                        <h3 data-key="genesis_t1_title">Les Concepts Fondateurs (Antiquité - 1940s)</h3>
-                        <p data-key="genesis_t1_desc">Bien avant l'informatique, l'idée d'automates et d'êtres artificiels intelligents fascinait. Des philosophes comme Aristote ont exploré le raisonnement logique. Plus tard, des figures comme Pascal et Leibniz ont conçu des machines à calculer. Au XXe siècle, les travaux d'Alan Turing sur la calculabilité et sa fameuse "machine de Turing" ont jeté les bases théoriques de l'IA.</p>
+                    <div class="timeline-icon">❖</div>
+                    <div class="glass-panel p-6 rounded-xl">
+                        <h3 class="font-display text-2xl font-bold mb-2" data-key="genesis_t1_title">Concepts Fondateurs (Antiquité - 1940s)</h3>
+                        <p class="text-text_secondary" data-key="genesis_t1_desc">L'idée d'automates intelligents fascine depuis l'antiquité. Les travaux d'Alan Turing sur la calculabilité et sa "machine de Turing" ont jeté les bases théoriques de l'IA moderne.</p>
                     </div>
                 </div>
                 <div class="timeline-item">
-                    <div class="timeline-icon"><i class="fas fa-users"></i></div>
-                    <div class="timeline-content">
-                        <h3 data-key="genesis_t2_title">L'Acte de Naissance (1950s)</h3>
-                        <p data-key="genesis_t2_desc">Le terme "Intelligence Artificielle" est officiellement né lors de la conférence de Dartmouth en 1956, organisée par John McCarthy, Marvin Minsky, Nathaniel Rochester et Claude Shannon. Cet événement a marqué le début de l'IA comme champ de recherche distinct, avec l'optimisme que des machines intelligentes pourraient être créées en quelques décennies.</p>
+                    <div class="timeline-icon">➤</div>
+                     <div class="glass-panel p-6 rounded-xl">
+                        <h3 class="font-display text-2xl font-bold mb-2" data-key="genesis_t2_title">L'Acte de Naissance (1956)</h3>
+                        <p class="text-text_secondary" data-key="genesis_t2_desc">Le terme "Intelligence Artificielle" est né lors de la conférence de Dartmouth. Cet événement a lancé l'IA comme un champ de recherche distinct, plein d'optimisme.</p>
                     </div>
                 </div>
                 <div class="timeline-item">
-                    <div class="timeline-icon"><i class="fas fa-cogs"></i></div>
-                    <div class="timeline-content">
-                        <h3 data-key="genesis_t3_title">Les Premiers Succès et "Hivers" (1960s - 1980s)</h3>
-                        <p data-key="genesis_t3_desc">Les premières décennies ont vu des programmes capables de résoudre des problèmes d'algèbre, de prouver des théorèmes et de jouer aux dames. Cependant, les limites de la puissance de calcul et des approches (principalement symboliques) ont conduit à des périodes de stagnation et de réduction des financements, appelées "hivers de l'IA". Les systèmes experts, capables d'imiter le raisonnement d'experts humains dans des domaines spécifiques, ont connu un certain succès dans les années 80.</p>
+                    <div class="timeline-icon">❄️</div>
+                     <div class="glass-panel p-6 rounded-xl">
+                        <h3 class="font-display text-2xl font-bold mb-2" data-key="genesis_t3_title">Succès et "Hivers" (1960s - 1980s)</h3>
+                        <p class="text-text_secondary" data-key="genesis_t3_desc">Malgré des premiers succès, les limites de la puissance de calcul ont mené à des périodes de stagnation et de réduction des financements, surnommées les "hivers de l'IA".</p>
                     </div>
                 </div>
                 <div class="timeline-item">
-                    <div class="timeline-icon"><i class="fas fa-brain"></i></div>
-                    <div class="timeline-content">
-                        <h3 data-key="genesis_t4_title">L'Avènement du Machine Learning (1990s - 2000s)</h3>
-                        <p data-key="genesis_t4_desc">L'IA a connu une renaissance grâce à l'augmentation de la puissance de calcul et à la disponibilité de grandes quantités de données. Le Machine Learning (apprentissage automatique), où les systèmes apprennent à partir de données sans être explicitement programmés, est devenu dominant. Des algorithmes comme les réseaux de neurones, les arbres de décision et les SVM ont gagné en popularité.</p>
-                    </div>
-                </div>
-                 <div class="timeline-item">
-                    <div class="timeline-icon"><i class="fas fa-robot"></i></div>
-                    <div class="timeline-content">
-                        <h3 data-key="genesis_t5_title">L'Ère du Deep Learning (2010s - Aujourd'hui)</h3>
-                        <p data-key="genesis_t5_desc">Le Deep Learning, une sous-branche du Machine Learning utilisant des réseaux de neurones profonds (avec de nombreuses couches), a révolutionné le domaine. Des succès spectaculaires en reconnaissance d'image (ImageNet), traitement du langage naturel (traduction automatique, modèles de langage comme GPT) et jeux (AlphaGo) ont propulsé l'IA au premier plan.</p>
+                    <div class="timeline-icon">🧠</div>
+                     <div class="glass-panel p-6 rounded-xl">
+                        <h3 class="font-display text-2xl font-bold mb-2" data-key="genesis_t4_title">L'Ère du Deep Learning (2010s - ...)</h3>
+                        <p class="text-text_secondary" data-key="genesis_t4_desc">La renaissance de l'IA grâce aux réseaux de neurones profonds, à l'explosion de la puissance de calcul (GPU) et au Big Data. Des succès comme AlphaGo ont démontré sa puissance.</p>
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <section id="actuel" class="content-section alternate-bg">
-            <h2 data-key="current_title"><i class="fas fa-microchip"></i> L'IA Aujourd'hui : Omniprésence et Défis</h2>
-            <div class="grid-container">
-                <div class="grid-item">
-                    <h3 data-key="current_g1_title">Domaines d'Application Clés</h3>
-                    <ul data-key="current_g1_list">
-                        <li><strong>Santé :</strong> Diagnostic assisté, découverte de médicaments, médecine personnalisée.</li>
-                        <li><strong>Transport :</strong> Véhicules autonomes, optimisation logistique, gestion du trafic.</li>
-                        <li><strong>Finance :</strong> Détection de fraude, trading algorithmique, conseil financier.</li>
-                        <li><strong>Commerce :</strong> Recommandations personnalisées, assistants virtuels, chatbots.</li>
-                        <li><strong>Industrie :</strong> Maintenance prédictive, contrôle qualité, robotique avancée.</li>
-                        <li><strong>Créativité :</strong> Génération d'images, de musique, d'écriture assistée.</li>
-                    </ul>
+
+    <!-- Bento Grid Section -->
+    <section id="actuel" class="py-24 px-6 relative">
+        <div class="max-w-7xl mx-auto">
+            <div class="mb-16">
+                <h2 class="font-display text-4xl md:text-6xl font-bold mb-4" data-key="current_title">L'IA <span class="text-text_secondary">Aujourd'hui</span></h2>
+                <div class="h-1 w-20 bg-accent"></div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                 <div class="bento-card glass-panel rounded-2xl p-8 md:col-span-2">
+                    <h3 class="text-3xl font-display font-bold mb-2" data-key="current_c1_title">Applications Omniprésentes</h3>
+                    <p class="text-text_secondary" data-key="current_c1_desc">De la santé (diagnostic) au transport (véhicules autonomes), en passant par la finance et la création artistique, l'IA transforme tous les secteurs.</p>
                 </div>
-                <div class="grid-item">
-                    <h3 data-key="current_g2_title">Technologies Dominantes</h3>
-                    <ul data-key="current_g2_list">
-                        <li><strong>Apprentissage Supervisé :</strong> Apprentissage à partir de données étiquetées (classification, régression).</li>
-                        <li><strong>Apprentissage Non Supervisé :</strong> Découverte de structures dans des données non étiquetées (clustering, réduction de dimension).</li>
-                        <li><strong>Apprentissage par Renforcement :</strong> Un agent apprend par essais et erreurs en interagissant avec un environnement.</li>
-                        <li><strong>Réseaux de Neurones Profonds (Deep Learning) :</strong> CNNs (images), RNNs/LSTMs (séquences), Transformers (langage).</li>
-                        <li><strong>Traitement du Langage Naturel (NLP) :</strong> Compréhension, génération, traduction de langage humain.</li>
-                        <li><strong>Vision par Ordinateur :</strong> Analyse et interprétation d'images et de vidéos.</li>
-                    </ul>
+                <div class="bento-card glass-panel rounded-2xl p-8">
+                    <h3 class="text-2xl font-display font-bold mb-2" data-key="current_c2_title">Technologies Clés</h3>
+                    <p class="text-text_secondary text-sm" data-key="current_c2_desc">Machine Learning, Deep Learning, Transformers, NLP, Vision par Ordinateur.</p>
                 </div>
-                <div class="grid-item full-width">
-                    <h3 data-key="current_g3_title">Impacts et Enjeux Actuels</h3>
-                    <p data-key="current_g3_desc">L'IA transforme positivement de nombreux secteurs, améliorant l'efficacité, la précision et ouvrant de nouvelles possibilités. Cependant, son déploiement soulève des questions cruciales :</p>
-                    <ul data-key="current_g3_list">
-                        <li><strong>Biais algorithmiques :</strong> Les IA peuvent perpétuer ou amplifier des biais présents dans les données d'entraînement, menant à des discriminations.</li>
-                        <li><strong>Emploi et compétences :</strong> Automatisation de certaines tâches et nécessité d'adapter la main-d'œuvre.</li>
-                        <li><strong>Confidentialité et sécurité des données :</strong> Utilisation massive de données personnelles.</li>
-                        <li><strong>Transparence et explicabilité (XAI) :</strong> Comprendre comment les modèles d'IA prennent leurs décisions.</li>
-                        <li><strong>Responsabilité :</strong> Qui est responsable en cas d'erreur ou de dommage causé par une IA ?</li>
-                    </ul>
+                <div class="bento-card glass-panel rounded-2xl p-8">
+                    <h3 class="text-2xl font-display font-bold mb-2" data-key="current_c3_title">IA Générative</h3>
+                    <p class="text-text_secondary text-sm" data-key="current_c3_desc">Les LLMs (Large Language Models) comme GPT et les modèles de diffusion (Midjourney) créent du texte et des images d'une qualité sans précédent.</p>
+                </div>
+                <div class="bento-card glass-panel rounded-2xl p-8 md:col-span-2">
+                    <h3 class="text-3xl font-display font-bold mb-2" data-key="current_c4_title">Défis et Éthique</h3>
+                    <p class="text-text_secondary" data-key="current_c4_desc">Les questions de biais algorithmiques, de transparence (XAI), de consommation énergétique et de régulation sont au cœur des débats actuels.</p>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <section id="demo-ia" class="content-section">
-            <h2 data-key="demo_title"><i class="fas fa-comments"></i> Koncept Assistant</h2>
-            <p class="demo-intro" data-key="demo_intro">Discutez avec Koncept Assistant, un assistant virtuel simple basé sur des règles, pour poser vos questions sur l'Intelligence Artificielle.</p>
-            <div class="chatbot-container">
-                <div id="chatbox" class="chatbox"></div>
-                <div class="chat-input-area">
-                    <input type="text" id="userInput" placeholder="Posez votre question..." aria-label="Votre message" data-key="demo_placeholder">
-                    <button id="sendMessageBtn" data-key="demo_send_btn">Envoyer</button>
+    <!-- Marquee Section -->
+    <section class="py-12 border-y border-glassBorder bg-white/2 overflow-hidden">
+        <div class="relative flex overflow-x-hidden">
+            <div class="py-4 animate-marquee whitespace-nowrap flex space-x-16 items-center text-2xl font-bold text-text_secondary/20 font-display select-none">
+                <span>DEEP LEARNING</span><span>TRANSFORMERS</span><span>PYTHON</span><span>PYTORCH</span><span>ÉTHIQUE</span><span>XAI</span><span>IA GÉNÉRATIVE</span>
+                <span>DEEP LEARNING</span><span>TRANSFORMERS</span><span>PYTHON</span><span>PYTORCH</span><span>ÉTHIQUE</span><span>XAI</span><span>IA GÉNÉRATIVE</span>
+            </div>
+            <div class="absolute top-0 py-4 animate-marquee2 whitespace-nowrap flex space-x-16 items-center text-2xl font-bold text-text_secondary/20 font-display select-none">
+                <span>DEEP LEARNING</span><span>TRANSFORMERS</span><span>PYTHON</span><span>PYTORCH</span><span>ÉTHIQUE</span><span>XAI</span><span>IA GÉNÉRATIVE</span>
+                <span>DEEP LEARNING</span><span>TRANSFORMERS</span><span>PYTHON</span><span>PYTORCH</span><span>ÉTHIQUE</span><span>XAI</span><span>IA GÉNÉRATIVE</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Future Section -->
+     <section id="avenir" class="py-24 px-6 relative">
+        <div class="max-w-7xl mx-auto">
+             <div class="mb-16 text-right">
+                <h2 class="font-display text-4xl md:text-6xl font-bold mb-4" data-key="future_title">Vision <span class="text-text_secondary">Futur</span></h2>
+                <div class="h-1 w-20 bg-accent ml-auto"></div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="glass-panel p-8 rounded-xl">
+                     <h3 class="text-3xl font-display font-bold mb-2" data-key="future_c1_title">Vers l'IA Générale (AGI)</h3>
+                    <p class="text-text_secondary" data-key="future_c1_desc">La quête d'une IA capable de raisonner et d'apprendre dans n'importe quel domaine, à l'instar d'un humain. Une rupture technologique majeure en perspective.</p>
+                </div>
+                <div class="glass-panel p-8 rounded-xl">
+                     <h3 class="text-3xl font-display font-bold mb-2" data-key="future_c2_title">Collaboration Homme-Machine</h3>
+                    <p class="text-text_secondary" data-key="future_c2_desc">L'IA comme un copilote augmentant les capacités humaines dans la créativité, la science et la prise de décision, plutôt qu'un simple remplaçant.</p>
+                </div>
+                 <div class="glass-panel p-8 rounded-xl">
+                     <h3 class="text-3xl font-display font-bold mb-2" data-key="future_c3_title">IA Embarquée et Frugale</h3>
+                    <p class="text-text_secondary" data-key="future_c3_desc">Le développement de modèles plus petits et efficaces, capables de fonctionner directement sur nos appareils (smartphones, voitures) sans dépendre du cloud.</p>
+                </div>
+                <div class="glass-panel p-8 rounded-xl">
+                     <h3 class="text-3xl font-display font-bold mb-2" data-key="future_c4_title">Gouvernance Mondiale</h3>
+                    <p class="text-text_secondary" data-key="future_c4_desc">La mise en place de cadres réglementaires et éthiques internationaux pour assurer un développement sûr, équitable et bénéfique de l'IA pour l'humanité.</p>
                 </div>
             </div>
-            <p class="model-info" data-key="demo_disclaimer">Koncept Assistant est un exemple de chatbot simple pour illustrer les interactions basiques.</p>
-        </section>
+        </div>
+    </section>
 
 
-        <section id="avenir" class="content-section alternate-bg">
-            <h2 data-key="future_title"><i class="fas fa-rocket"></i> L'Avenir de l'IA : Potentiels et Précautions</h2>
-            <div class="future-cards">
-                <div class="card">
-                    <div class="card-icon"><i class="fas fa-brain"></i></div>
-                    <h3 data-key="future_c1_title">Vers l'Intelligence Artificielle Générale (AGI) ?</h3>
-                    <p data-key="future_c1_desc">L'AGI, une IA capable de comprendre, apprendre et appliquer ses connaissances à n'importe quelle tâche qu'un humain peut effectuer, reste un objectif lointain mais activement recherché. Les implications seraient profondes pour la science, la société et l'humanité.</p>
-                </div>
-                <div class="card">
-                    <div class="card-icon"><i class="fas fa-users-cog"></i></div>
-                    <h3 data-key="future_c2_title">Collaboration Homme-Machine</h3>
-                    <p data-key="future_c2_desc">L'avenir verra probably une synergie accrue entre humains et IA, où l'IA augmente les capacités humaines plutôt que de les remplacer. Des outils d'IA plus intuitifs et collaboratifs sont en développement.</p>
-                </div>
-                <div class="card">
-                    <div class="card-icon"><i class="fas fa-shield-alt"></i></div>
-                    <h3 data-key="future_c3_title">Éthique et Gouvernance de l'IA</h3>
-                    <p data-key="future_c3_desc">Le développement de cadres éthiques robustes, de réglementations et de normes internationales est crucial pour assurer un développement et un déploiement responsables de l'IA, minimisant les risques et maximisant les bénéfices pour tous.</p>
-                </div>
-                <div class="card">
-                    <div class="card-icon"><i class="fas fa-flask"></i></div>
-                    <h3 data-key="future_c4_title">Nouvelles Frontières Technologiques</h3>
-                    <p data-key="future_c4_desc">Des domaines comme l'IA explicable (XAI), l'IA frugale (moins gourmande en données et calcul), l'informatique neuromorphique et quantique pourraient ouvrir de nouvelles voies pour des IA plus puissantes, efficaces et compréhensibles.</p>
-                </div>
+    <!-- Contact/Footer -->
+    <section id="contact" class="py-32 px-6 text-center relative">
+        <div class="absolute inset-0 bg-gradient-to-t from-accent/5 to-transparent pointer-events-none"></div>
+        <div class="max-w-3xl mx-auto relative z-10">
+            <h2 class="font-display text-5xl md:text-7xl font-bold mb-8" data-key="contact_title">Prêt à construire<br><span class="text-light">l'impossible ?</span></h2>
+            <p class="text-xl text-text_secondary mb-12" data-key="contact_subtitle">Collaborons pour transformer vos idées ambitieuses en réalité digitale grâce à la puissance de l'IA.</p>
+            
+            <a href="mailto:contact@alexkoncept.com" class="group relative inline-flex items-center justify-center px-10 py-5 bg-light text-dark font-bold text-lg rounded-full overflow-hidden transition-transform hover:scale-105">
+                <span class="relative z-10 group-hover:text-white transition-colors duration-300" data-key="contact_cta">contact@alexkoncept.com</span>
+                <div class="absolute inset-0 bg-accent transform scale-y-0 group-hover:scale-y-100 transition-transform origin-bottom duration-300 ease-out"></div>
+            </a>
+
+            <!-- MODIFIÉ: Remplacement de justify-between par justify-center pour centrer le contenu -->
+            <div class="mt-24 pt-8 border-t border-glassBorder flex flex-col md:flex-row justify-center items-center text-sm text-text_secondary/50">
+                <p data-key="footer_copyright">© 2025 - par Alex Koncept</p>
             </div>
-            <div class="conclusion-avenir">
-                <p data-key="future_conclusion">L'avenir de l'IA est plein de promesses, mais il exige une approche réfléchie, inclusive et proactive pour naviguer ses complexités. Le dialogue entre chercheurs, décideurs, entreprises et citoyens est essentiel.</p>
+        </div>
+    </section>
+
+    <!-- HTML du Chatbot -->
+    <div id="chatbot-container">
+        <!-- Bouton pour ouvrir/fermer le chat -->
+        <button id="chatbot-toggle" class="chatbot-toggle glass-panel">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-accent" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.839 8.839 0 01-4.082-.982A.5.5 0 005 16.516v-1.39a.5.5 0 00-.217-.424A7.002 7.002 0 012 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM4.535 15.116a.5.5 0 00.217.424l1.39.926a.5.5 0 00.553-.03l1.325-.973a.5.5 0 00-.217-.848L5.94 15.34a.5.5 0 00-.405-.224v.002z" clip-rule="evenodd" />
+            </svg>
+        </button>
+        <!-- Fenêtre du chatbot -->
+        <div id="chatbot-window" class="chatbot-window glass-panel">
+            <div class="chatbot-header">Koncept Assistant</div>
+            <div id="chat-messages" class="chat-messages">
+                <!-- Les messages apparaîtront ici -->
             </div>
-        </section>
+            <form id="chat-form" class="chat-form">
+                <input type="text" id="chat-input" placeholder="Posez une question..." autocomplete="off">
+                <button type="submit">➤</button>
+            </form>
+        </div>
+    </div>
 
-        <section id="ressources" class="content-section">
-            <h2 data-key="resources_title"><i class="fas fa-book-open"></i> Pour Aller Plus Loin</h2>
-            <p data-key="resources_intro">L'IA est un domaine vaste et en constante évolution. Voici quelques ressources pour approfondir vos connaissances :</p>
-            <ul data-key="resources_list">
-                <li><a href="https://www.elementsofai.com/" target="_blank" rel="noopener noreferrer">Elements of AI (Cours gratuit)</a></li>
-                <li><a href="https://www.deeplearning.ai/" target="_blank" rel="noopener noreferrer">DeepLearning.AI (Cours par Andrew Ng)</a></li>
-                <li><a href="https://openai.com/blog/" target="_blank" rel="noopener noreferrer">Blog OpenAI</a></li>
-                <li><a href="https://deepmind.google/discover/blog/" target="_blank" rel="noopener noreferrer">Blog DeepMind</a></li>
-                <li><a href="https://arxiv.org/list/cs.AI/recent" target="_blank" rel="noopener noreferrer">ArXiv - Artificial Intelligence (Publications de recherche)</a></li>
-                <li>Des livres comme "Superintelligence" de Nick Bostrom, "Life 3.0" de Max Tegmark, ou "L'IA expliquée à mon boss" de Jean-Claude Heudin.</li>
-            </ul>
-        </section>
-    </main>
-
-    <footer>
-        <p data-key="footer_copyright">© 2024 IA Explorée & Koncept Assistant. Tous droits réservés.</p>
-        <p data-key="footer_credits">Une exploration du monde de l'Intelligence Artificielle. Développé avec <i class="fas fa-heart" style="color:red;"></i> et une touche d'IA.</p>
-    </footer>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const burger = document.querySelector('.burger');
-            const nav = document.querySelector('.nav-links');
-            burger.addEventListener('click', () => {
-                nav.classList.toggle('nav-active');
-                burger.classList.toggle('toggle');
-            });
 
+            // --- 1. Custom Cursor Logic ---
+            const cursorDot = document.querySelector('.cursor-dot');
+            const cursorOutline = document.querySelector('.cursor-outline');
+            window.addEventListener('mousemove', (e) => {
+                const posX = e.clientX; const posY = e.clientY;
+                cursorDot.style.left = `${posX}px`; cursorDot.style.top = `${posY}px`;
+                cursorOutline.animate({ left: `${posX}px`, top: `${posY}px` }, { duration: 500, fill: "forwards" });
+            });
+            document.querySelectorAll('a, button').forEach(el => {
+                el.addEventListener('mouseenter', () => { cursorOutline.style.transform = 'translate(-50%, -50%) scale(1.5)'; });
+                el.addEventListener('mouseleave', () => { cursorOutline.style.transform = 'translate(-50%, -50%) scale(1)'; });
+            });
+            
+            // --- 2. Theme & Language ---
             const themeToggle = document.getElementById('theme-toggle');
-            const body = document.body;
-            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-            if (currentTheme === 'dark') { body.classList.add('dark-mode'); }
+            const htmlEl = document.documentElement;
+            const currentTheme = localStorage.getItem('theme') || 'dark';
+            htmlEl.setAttribute('data-theme', currentTheme);
             themeToggle.addEventListener('click', () => {
-                body.classList.toggle('dark-mode');
-                localStorage.setItem('theme', body.classList.contains('dark-mode') ? 'dark' : 'light');
+                const newTheme = htmlEl.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+                htmlEl.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
             });
-
+            
             const translations = {
                 fr: {
-                    theme_toggle_label: "Changer le thème", nav_logo: "IA Explorée", nav_genesis: "Prémices & Genèse", nav_current: "État Actuel", nav_demo: "Koncept Assistant", nav_future: "Avenir", nav_resources: "Ressources",
-                    hero_title: "L'Intelligence Artificielle : <br>Découverte d'un Monde en Évolution", hero_subtitle: "Explorez les origines, comprenez le présent, anticipez l'avenir de l'IA et discutez avec Koncept Assistant.", hero_cta: "Commencer l'exploration",
-                    genesis_title: "<i class='fas fa-history'></i> Prémices et Genèse de l'IA", genesis_t1_title: "Les Concepts Fondateurs (Antiquité - 1940s)", genesis_t1_desc: "Bien avant l'informatique, l'idée d'automates et d'êtres artificiels intelligents fascinait. Des philosophes comme Aristote ont exploré le raisonnement logique. Plus tard, des figures comme Pascal et Leibniz ont conçu des machines à calculer. Au XXe siècle, les travaux d'Alan Turing sur la calculabilité et sa fameuse 'machine de Turing' ont jeté les bases théoriques de l'IA.",
-                    genesis_t2_title: "L'Acte de Naissance (1950s)", genesis_t2_desc: "Le terme 'Intelligence Artificielle' est officiellement né lors de la conférence de Dartmouth en 1956. Cet événement a marqué le début de l'IA comme champ de recherche distinct.",
-                    genesis_t3_title: "Les Premiers Succès et 'Hivers' (1960s - 1980s)", genesis_t3_desc: "Les premières décennies ont vu des programmes capables de résoudre des problèmes d'algèbre ou de jouer aux dames. Cependant, les limites de l'époque ont conduit à des périodes de stagnation, appelées 'hivers de l'IA'.",
-                    genesis_t4_title: "L'Avènement du Machine Learning (1990s - 2000s)", genesis_t4_desc: "L'IA a connu une renaissance grâce à l'augmentation de la puissance de calcul et à la disponibilité de grandes quantités de données. Le Machine Learning (apprentissage automatique) est devenu dominant.",
-                    genesis_t5_title: "L'Ère du Deep Learning (2010s - Aujourd'hui)", genesis_t5_desc: "Le Deep Learning, utilisant des réseaux de neurones profonds, a révolutionné le domaine avec des succès spectaculaires en reconnaissance d'image, traitement du langage et jeux.",
-                    current_title: "<i class='fas fa-microchip'></i> L'IA Aujourd'hui : Omniprésence et Défis",
-                    current_g1_title: "Domaines d'Application Clés", current_g1_list: "<li><strong>Santé :</strong> Diagnostic assisté, découverte de médicaments.</li><li><strong>Transport :</strong> Véhicules autonomes, optimisation logistique.</li><li><strong>Finance :</strong> Détection de fraude, trading algorithmique.</li><li><strong>Commerce :</strong> Recommandations, assistants virtuels.</li><li><strong>Industrie :</strong> Maintenance prédictive, robotique.</li><li><strong>Créativité :</strong> Génération d'images, de musique.</li>",
-                    current_g2_title: "Technologies Dominantes", current_g2_list: "<li><strong>Apprentissage Supervisé & Non Supervisé</strong></li><li><strong>Apprentissage par Renforcement</strong></li><li><strong>Réseaux de Neurones Profonds (Deep Learning)</strong></li><li><strong>Traitement du Langage Naturel (NLP)</strong></li><li><strong>Vision par Ordinateur</strong></li>",
-                    current_g3_title: "Impacts et Enjeux Actuels", current_g3_desc: "L'IA transforme positivement de nombreux secteurs, mais soulève des questions cruciales :", current_g3_list: "<li><strong>Biais algorithmiques :</strong> Risque de discrimination.</li><li><strong>Emploi et compétences :</strong> Automatisation et adaptation.</li><li><strong>Confidentialité des données :</strong> Utilisation massive de données.</li><li><strong>Transparence (XAI) :</strong> Comprendre les décisions de l'IA.</li><li><strong>Responsabilité :</strong> Qui est responsable en cas d'erreur ?</li>",
-                    demo_title: "<i class='fas fa-comments'></i> Koncept Assistant", demo_intro: "Discutez avec Koncept Assistant, un assistant virtuel simple basé sur des règles, pour poser vos questions sur l'Intelligence Artificielle.", demo_placeholder: "Posez votre question...", demo_send_btn: "Envoyer", demo_disclaimer: "Koncept Assistant est un exemple de chatbot simple pour illustrer les interactions basiques.",
-                    future_title: "<i class='fas fa-rocket'></i> L'Avenir de l'IA : Potentiels et Précautions",
-                    future_c1_title: "Vers l'IA Générale (AGI) ?", future_c1_desc: "L'AGI, une IA aussi polyvalente qu'un humain, reste un objectif lointain mais activement recherché, avec des implications profondes.",
-                    future_c2_title: "Collaboration Homme-Machine", future_c2_desc: "L'avenir verra une synergie accrue où l'IA augmente les capacités humaines plutôt que de les remplacer.",
-                    future_c3_title: "Éthique et Gouvernance", future_c3_desc: "Le développement de cadres éthiques et de réglementations est crucial pour un déploiement responsable de l'IA.",
-                    future_c4_title: "Nouvelles Frontières", future_c4_desc: "L'IA explicable (XAI), l'IA frugale et l'informatique quantique pourraient ouvrir de nouvelles voies pour des IA plus puissantes.",
-                    future_conclusion: "L'avenir de l'IA est plein de promesses, mais il exige une approche réfléchie et inclusive. Le dialogue entre tous les acteurs est essentiel.",
-                    resources_title: "<i class='fas fa-book-open'></i> Pour Aller Plus Loin", resources_intro: "L'IA est un domaine vaste et en constante évolution. Voici quelques ressources pour approfondir vos connaissances :",
-                    resources_list: "<li><a href='https://www.elementsofai.com/' target='_blank' rel='noopener noreferrer'>Elements of AI (Cours gratuit)</a></li><li><a href='https://www.deeplearning.ai/' target='_blank' rel='noopener noreferrer'>DeepLearning.AI (Cours par Andrew Ng)</a></li><li><a href='https://openai.com/blog/' target='_blank' rel='noopener noreferrer'>Blog OpenAI</a></li><li><a href='https://deepmind.google/discover/blog/' target='_blank' rel='noopener noreferrer'>Blog DeepMind</a></li><li><a href='https://arxiv.org/list/cs.AI/recent' target='_blank' rel='noopener noreferrer'>ArXiv - Artificial Intelligence</a></li><li>Livres : 'Superintelligence' (Bostrom), 'Life 3.0' (Tegmark).</li>",
-                    footer_copyright: "© 2024 IA Explorée & Koncept Assistant. Tous droits réservés.", footer_credits: "Une exploration du monde de l'Intelligence Artificielle. Développé avec <i class='fas fa-heart' style='color:red;'></i> et une touche d'IA.",
-                    chatbot_responses: { "bonjour": "Bonjour ! Comment puis-je vous aider ?", "ia": "L'IA, ou Intelligence Artificielle, est la simulation de l'intelligence humaine par des machines. Posez-moi une question sur un sujet comme le 'deep learning' ou 'Turing'.", "deep learning": "Le Deep Learning est un type de Machine Learning utilisant des réseaux de neurones profonds pour analyser des données complexes comme des images ou du son.", "turing": "Alan Turing est considéré comme l'un des pères de l'IA. Son 'Test de Turing' évalue la capacité d'une machine à exhiber un comportement intelligent indiscernable de celui d'un humain.", "merci": "De rien ! N'hésitez pas si vous avez d'autres questions.", "default": "Je ne suis pas sûr de comprendre. Pouvez-vous reformuler votre question sur l'IA ?" }
+                    nav_genesis: "Prémices", nav_current: "Aujourd'hui", nav_future: "Avenir", nav_contact: "Contact", nav_cta: "Discutons",
+                    hero_title_1: "L'AVENTURE DE L'", hero_title_2: "INTELLIGENCE ARTIFICIELLE",
+                    hero_subtitle: "De ses origines théoriques à son futur prometteur, une exploration complète du monde fascinant de l'IA.",
+                    hero_cta: "Commencer l'Exploration",
+                    genesis_title: "Prémices & Genèse",
+                    genesis_t1_title: "Concepts Fondateurs (Antiquité - 1940s)", genesis_t1_desc: "L'idée d'automates intelligents fascine depuis l'antiquité. Les travaux d'Alan Turing sur la calculabilité et sa 'machine de Turing' ont jeté les bases théoriques de l'IA moderne.",
+                    genesis_t2_title: "L'Acte de Naissance (1956)", genesis_t2_desc: "Le terme 'Intelligence Artificielle' est né lors de la conférence de Dartmouth. Cet événement a lancé l'IA comme un champ de recherche distinct, plein d'optimisme.",
+                    genesis_t3_title: "Succès et 'Hivers' (1960s - 1980s)", genesis_t3_desc: "Malgré des premiers succès, les limites de la puissance de calcul ont mené à des périodes de stagnation et de réduction des financements, surnommées les 'hivers de l'IA'.",
+                    genesis_t4_title: "L'Ère du Deep Learning (2010s - ...)", genesis_t4_desc: "La renaissance de l'IA grâce aux réseaux de neurones profonds, à l'explosion de la puissance de calcul (GPU) et au Big Data. Des succès comme AlphaGo ont démontré sa puissance.",
+                    current_title: "L'IA Aujourd'hui",
+                    current_c1_title: "Applications Omniprésentes", current_c1_desc: "De la santé (diagnostic) au transport (véhicules autonomes), en passant par la finance et la création artistique, l'IA transforme tous les secteurs.",
+                    current_c2_title: "Technologies Clés", current_c2_desc: "Machine Learning, Deep Learning, Transformers, NLP, Vision par Ordinateur.",
+                    current_c3_title: "IA Générative", current_c3_desc: "Les LLMs (Large Language Models) comme GPT et les modèles de diffusion (Midjourney) créent du texte et des images d'une qualité sans précédent.",
+                    current_c4_title: "Défis et Éthique", current_c4_desc: "Les questions de biais algorithmiques, de transparence (XAI), de consommation énergétique et de régulation sont au cœur des débats actuels.",
+                    future_title: "Vision Futur",
+                    future_c1_title: "Vers l'IA Générale (AGI)", future_c1_desc: "La quête d'une IA capable de raisonner et d'apprendre dans n'importe quel domaine, à l'instar d'un humain. Une rupture technologique majeure en perspective.",
+                    future_c2_title: "Collaboration Homme-Machine", future_c2_desc: "L'IA comme un copilote augmentant les capacités humaines dans la créativité, la science et la prise de décision, plutôt qu'un simple remplaçant.",
+                    future_c3_title: "IA Embarquée et Frugale", future_c3_desc: "Le développement de modèles plus petits et efficaces, capables de fonctionner directement sur nos appareils (smartphones, voitures) sans dépendre du cloud.",
+                    future_c4_title: "Gouvernance Mondiale", future_c4_desc: "La mise en place de cadres réglementaires et éthiques internationaux pour assurer un développement sûr, équitable et bénéfique de l'IA pour l'humanité.",
+                    contact_title: "Prêt à construire l'impossible ?", contact_subtitle: "Collaborons pour transformer vos idées ambitieuses en réalité digitale grâce à la puissance de l'IA.",
+                    contact_cta: "contact@alexkoncept.com",
+                    footer_copyright: "© 2025 - par Alex Koncept"
                 },
                 en: {
-                    theme_toggle_label: "Change theme", nav_logo: "AI Explored", nav_genesis: "Beginnings & Genesis", nav_current: "Current State", nav_demo: "Koncept Assistant", nav_future: "Future", nav_resources: "Resources",
-                    hero_title: "Artificial Intelligence: <br>Discovering an Evolving World", hero_subtitle: "Explore the origins, understand the present, anticipate the future of AI, and chat with Koncept Assistant.", hero_cta: "Start Exploring",
-                    genesis_title: "<i class='fas fa-history'></i> The Dawn and Genesis of AI", genesis_t1_title: "Founding Concepts (Antiquity - 1940s)", genesis_t1_desc: "Long before computers, the idea of intelligent automata fascinated thinkers. Philosophers like Aristotle explored logical reasoning. Later, figures like Pascal and Leibniz designed calculating machines. In the 20th century, Alan Turing's work on computability and his famous 'Turing machine' laid the theoretical groundwork for AI.",
-                    genesis_t2_title: "The Birth Certificate (1950s)", genesis_t2_desc: "The term 'Artificial Intelligence' was officially coined at the Dartmouth Conference in 1956. This event marked the beginning of AI as a distinct field of research.",
-                    genesis_t3_title: "Early Successes and 'Winters' (1960s - 1980s)", genesis_t3_desc: "The first decades saw programs that could solve algebra problems or play checkers. However, limitations of the time led to periods of stagnation, known as 'AI winters'.",
-                    genesis_t4_title: "The Rise of Machine Learning (1990s - 2000s)", genesis_t4_desc: "AI was reborn thanks to increased computing power and the availability of large amounts of data. Machine Learning became the dominant approach.",
-                    genesis_t5_title: "The Deep Learning Era (2010s - Today)", genesis_t5_desc: "Deep Learning, using deep neural networks, revolutionized the field with spectacular successes in image recognition, language processing, and games.",
-                    current_title: "<i class='fas fa-microchip'></i> AI Today: Ubiquity and Challenges",
-                    current_g1_title: "Key Application Areas", current_g1_list: "<li><strong>Healthcare:</strong> Assisted diagnosis, drug discovery.</li><li><strong>Transport:</strong> Autonomous vehicles, logistics optimization.</li><li><strong>Finance:</strong> Fraud detection, algorithmic trading.</li><li><strong>Commerce:</strong> Recommendations, virtual assistants.</li><li><strong>Industry:</strong> Predictive maintenance, robotics.</li><li><strong>Creativity:</strong> Image and music generation.</li>",
-                    current_g2_title: "Dominant Technologies", current_g2_list: "<li><strong>Supervised & Unsupervised Learning</strong></li><li><strong>Reinforcement Learning</strong></li><li><strong>Deep Neural Networks (Deep Learning)</strong></li><li><strong>Natural Language Processing (NLP)</strong></li><li><strong>Computer Vision</strong></li>",
-                    current_g3_title: "Current Impacts and Stakes", current_g3_desc: "AI is positively transforming many sectors, but it raises crucial questions:", current_g3_list: "<li><strong>Algorithmic Bias:</strong> Risk of discrimination.</li><li><strong>Jobs and Skills:</strong> Automation and adaptation.</li><li><strong>Data Privacy:</strong> Massive use of data.</li><li><strong>Transparency (XAI):</strong> Understanding AI decisions.</li><li><strong>Accountability:</strong> Who is responsible in case of an error?</li>",
-                    demo_title: "<i class='fas fa-comments'></i> Koncept Assistant", demo_intro: "Chat with Koncept Assistant, a simple rule-based virtual assistant, to ask your questions about Artificial Intelligence.", demo_placeholder: "Ask your question...", demo_send_btn: "Send", demo_disclaimer: "Koncept Assistant is a simple chatbot example to illustrate basic interactions.",
-                    future_title: "<i class='fas fa-rocket'></i> The Future of AI: Potential and Precautions",
-                    future_c1_title: "Towards Artificial General Intelligence (AGI)?", future_c1_desc: "AGI, an AI as versatile as a human, remains a distant but actively pursued goal, with profound implications.",
-                    future_c2_title: "Human-Machine Collaboration", future_c2_desc: "The future will see increased synergy where AI augments human capabilities rather than replacing them.",
-                    future_c3_title: "Ethics and Governance", future_c3_desc: "Developing robust ethical frameworks and regulations is crucial for the responsible deployment of AI.",
-                    future_c4_title: "New Frontiers", future_c4_desc: "Explainable AI (XAI), frugal AI, and quantum computing could open new paths for more powerful AIs.",
-                    future_conclusion: "The future of AI is full of promise, but it requires a thoughtful and inclusive approach. Dialogue between all stakeholders is essential.",
-                    resources_title: "<i class='fas fa-book-open'></i> To Go Further", resources_intro: "AI is a vast and ever-evolving field. Here are some resources to deepen your knowledge:",
-                    resources_list: "<li><a href='https://www.elementsofai.com/' target='_blank' rel='noopener noreferrer'>Elements of AI (Free Course)</a></li><li><a href='https://www.deeplearning.ai/' target='_blank' rel='noopener noreferrer'>DeepLearning.AI (Courses by Andrew Ng)</a></li><li><a href='https://openai.com/blog/' target='_blank' rel='noopener noreferrer'>OpenAI Blog</a></li><li><a href='https://deepmind.google/discover/blog/' target='_blank' rel='noopener noreferrer'>DeepMind Blog</a></li><li><a href='https://arxiv.org/list/cs.AI/recent' target='_blank' rel='noopener noreferrer'>ArXiv - Artificial Intelligence</a></li><li>Books: 'Superintelligence' (Bostrom), 'Life 3.0' (Tegmark).</li>",
-                    footer_copyright: "© 2024 AI Explored & Koncept Assistant. All rights reserved.", footer_credits: "An exploration of the world of Artificial Intelligence. Developed with <i class='fas fa-heart' style='color:red;'></i> and a touch of AI.",
-                    chatbot_responses: { "hello": "Hello! How can I help you with AI?", "ai": "AI, or Artificial Intelligence, is the simulation of human intelligence by machines. Ask me a question about a topic like 'deep learning' or 'Turing'.", "deep learning": "Deep Learning is a type of Machine Learning that uses deep neural networks to analyze complex data like images or sound.", "turing": "Alan Turing is considered one of the fathers of AI. His 'Turing Test' evaluates a machine's ability to exhibit intelligent behavior indistinguishable from that of a human.", "thank": "You're welcome! Feel free to ask if you have other questions.", "default": "I'm not sure I understand. Can you rephrase your question about AI?" }
+                    nav_genesis: "Genesis", nav_current: "Today", nav_future: "Future", nav_contact: "Contact", nav_cta: "Let's Talk",
+                    hero_title_1: "THE ADVENTURE OF", hero_title_2: "ARTIFICIAL INTELLIGENCE",
+                    hero_subtitle: "From its theoretical origins to its promising future, a complete exploration of the fascinating world of AI.",
+                    hero_cta: "Start Exploring",
+                    genesis_title: "Genesis & Origins",
+                    genesis_t1_title: "Founding Concepts (Antiquity - 1940s)", genesis_t1_desc: "The idea of intelligent automata has fascinated since antiquity. Alan Turing's work on computability and his 'Turing machine' laid the theoretical foundations for modern AI.",
+                    genesis_t2_title: "The Birth Certificate (1956)", genesis_t2_desc: "The term 'Artificial Intelligence' was coined at the Dartmouth Conference. This event launched AI as a distinct, optimistic field of research.",
+                    genesis_t3_title: "Successes and 'Winters' (1960s - 1980s)", genesis_t3_desc: "Despite early successes, limitations in computing power led to periods of stagnation and reduced funding, known as the 'AI winters'.",
+                    genesis_t4_title: "The Deep Learning Era (2010s - ...)", genesis_t4_desc: "The rebirth of AI thanks to deep neural networks, the explosion of computing power (GPUs), and Big Data. Successes like AlphaGo demonstrated its power.",
+                    current_title: "AI Today",
+                    current_c1_title: "Ubiquitous Applications", current_c1_desc: "From healthcare (diagnosis) to transportation (autonomous vehicles), finance, and artistic creation, AI is transforming every sector.",
+                    current_c2_title: "Key Technologies", current_c2_desc: "Machine Learning, Deep Learning, Transformers, NLP, Computer Vision.",
+                    current_c3_title: "Generative AI", current_c3_desc: "LLMs (Large Language Models) like GPT and diffusion models (Midjourney) create text and images of unprecedented quality.",
+                    current_c4_title: "Challenges and Ethics", current_c4_desc: "Issues of algorithmic bias, transparency (XAI), energy consumption, and regulation are at the heart of current debates.",
+                    future_title: "Future Vision",
+                    future_c1_title: "Towards Artificial General Intelligence (AGI)", future_c1_desc: "The quest for an AI capable of reasoning and learning in any domain, like a human. A major technological breakthrough on the horizon.",
+                    future_c2_title: "Human-Machine Collaboration", future_c2_desc: "AI as a co-pilot augmenting human capabilities in creativity, science, and decision-making, rather than a mere replacement.",
+                    future_c3_title: "Embedded and Frugal AI", future_c3_desc: "The development of smaller, more efficient models capable of running directly on our devices (smartphones, cars) without relying on the cloud.",
+                    future_c4_title: "Global Governance", future_c4_desc: "The establishment of international regulatory and ethical frameworks to ensure the safe, fair, and beneficial development of AI for humanity.",
+                    contact_title: "Ready to build the impossible?", contact_subtitle: "Let's collaborate to turn your ambitious ideas into digital reality with the power of AI.",
+                    contact_cta: "contact@alexkoncept.com",
+                    footer_copyright: "© 2025 - by Alex Koncept"
                 }
             };
-
             const setLanguage = (lang) => {
-                document.documentElement.lang = lang;
-                localStorage.setItem('language', lang);
-                document.querySelectorAll('[data-key]').forEach(elem => {
-                    const key = elem.getAttribute('data-key');
-                    if (translations[lang]?.[key]) {
-                        if (elem.hasAttribute('placeholder')) {
-                            elem.setAttribute('placeholder', translations[lang][key]);
-                        } else if(elem.hasAttribute('aria-label')) {
-                            elem.setAttribute('aria-label', translations[lang][key]);
-                        } else {
-                            elem.innerHTML = translations[lang][key];
-                        }
-                    }
+                htmlEl.lang = lang; localStorage.setItem('language', lang);
+                document.querySelectorAll('[data-key]').forEach(el => {
+                    const key = el.getAttribute('data-key');
+                    if (translations[lang]?.[key]) { el.innerHTML = translations[lang][key]; }
                 });
-                if (lang === 'fr') {
-                    document.getElementById('lang-fr-btn').classList.add('lang-active');
-                    document.getElementById('lang-en-btn').classList.remove('lang-active');
-                } else {
-                    document.getElementById('lang-en-btn').classList.add('lang-active');
-                    document.getElementById('lang-fr-btn').classList.remove('lang-active');
-                }
+                document.getElementById('lang-fr-btn').classList.toggle('lang-active', lang === 'fr');
+                document.getElementById('lang-en-btn').classList.toggle('lang-active', lang === 'en');
             };
-            const langFrBtn = document.getElementById('lang-fr-btn');
-            const langEnBtn = document.getElementById('lang-en-btn');
-            langFrBtn.addEventListener('click', () => setLanguage('fr'));
-            langEnBtn.addEventListener('click', () => setLanguage('en'));
-            const initialLang = localStorage.getItem('language') || (navigator.language.startsWith('fr') ? 'fr' : 'en');
-            
-            const chatbox = document.getElementById('chatbox');
-            const userInput = document.getElementById('userInput');
-            const sendMessageBtn = document.getElementById('sendMessageBtn');
+            document.getElementById('lang-fr-btn').addEventListener('click', () => setLanguage('fr'));
+            document.getElementById('lang-en-btn').addEventListener('click', () => setLanguage('en'));
+            setLanguage(localStorage.getItem('language') || 'fr');
 
-            function addMessage(message, sender) {
-                const messageElement = document.createElement('div');
-                messageElement.classList.add('chat-message', sender);
-                const contentElement = document.createElement('div');
-                contentElement.textContent = message;
-                messageElement.appendChild(contentElement);
-                chatbox.appendChild(messageElement);
-                chatbox.scrollTop = chatbox.scrollHeight;
+            // --- 3. Three.js Background Animation ---
+            const canvas = document.querySelector('#webgl-bg');
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            const particlesGeometry = new THREE.BufferGeometry();
+            const particlesCount = 1500;
+            const posArray = new Float32Array(particlesCount * 3);
+            for (let i = 0; i < particlesCount * 3; i++) { posArray[i] = (Math.random() - 0.5) * 15; }
+            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            const material = new THREE.PointsMaterial({ size: 0.015, color: 0x00f0ff, transparent: true, opacity: 0.8 });
+            const particlesMesh = new THREE.Points(particlesGeometry, material);
+            scene.add(particlesMesh);
+            const geometry2 = new THREE.IcosahedronGeometry(1, 1);
+            const material2 = new THREE.MeshBasicMaterial({ color: 0x7000ff, wireframe: true, transparent: true, opacity: 0.1 });
+            const sphere = new THREE.Mesh(geometry2, material2);
+            sphere.scale.set(4, 4, 4);
+            scene.add(sphere);
+            camera.position.z = 5;
+            let mouseX = 0, mouseY = 0;
+            window.addEventListener('mousemove', (event) => { mouseX = event.clientX / window.innerWidth - 0.5; mouseY = event.clientY / window.innerHeight - 0.5; });
+            const clock = new THREE.Clock();
+            function animate() {
+                const elapsedTime = clock.getElapsedTime();
+                particlesMesh.rotation.y = elapsedTime * 0.05;
+                sphere.rotation.x = elapsedTime * 0.1;
+                sphere.rotation.y = elapsedTime * 0.1;
+                const targetX = mouseX * 0.5;
+                const targetY = -mouseY * 0.5;
+                camera.position.x += 0.05 * (targetX - camera.position.x);
+                camera.position.y += 0.05 * (targetY - camera.position.y);
+                camera.lookAt(scene.position);
+                renderer.render(scene, camera);
+                requestAnimationFrame(animate);
             }
+            animate();
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
 
-            function getBotResponse(input) {
-                const lang = document.documentElement.lang;
-                const responses = translations[lang].chatbot_responses;
-                const lowerInput = input.toLowerCase();
-                for (const key in responses) {
-                    if (key !== 'default' && lowerInput.includes(key)) {
-                        return responses[key];
-                    }
-                }
-                return responses.default;
+            // --- 4. GSAP Animations ---
+            gsap.registerPlugin(ScrollTrigger);
+            gsap.from(".hero-text", { y: 100, opacity: 0, duration: 1, stagger: 0.2, ease: "power4.out" });
+            gsap.from(".hero-sub", { y: 20, opacity: 0, duration: 1 }, "-=0.5");
+            gsap.from(".hero-btn", { y: 20, opacity: 0, duration: 0.8 }, "-=0.5");
+            gsap.from("nav, .fixed.top-4", { y: -100, opacity: 0, duration: 1 }, "-=1");
+
+            const animateSection = (selector) => {
+                gsap.from(selector, {
+                    scrollTrigger: { trigger: selector, start: "top 85%" },
+                    y: 50, opacity: 0, duration: 0.8, stagger: 0.1, ease: "power3.out"
+                });
             }
+            animateSection(".timeline-item");
+            animateSection(".bento-card");
+            animateSection("#avenir .glass-panel");
 
-            function handleSendMessage() {
-                const message = userInput.value.trim();
-                if (message === '') return;
-                addMessage(message, 'user');
-                userInput.value = '';
-                setTimeout(() => {
-                    const botResponse = getBotResponse(message);
-                    addMessage(botResponse, 'bot');
-                }, 500);
-            }
+            // Marquee animation
+            const styleSheet = document.createElement("style");
+            styleSheet.innerText = `@keyframes marquee { 0% { transform: translateX(0%); } 100% { transform: translateX(-100%); } } @keyframes marquee2 { 0% { transform: translateX(100%); } 100% { transform: translateX(0%); } } .animate-marquee { animation: marquee 30s linear infinite; } .animate-marquee2 { animation: marquee2 30s linear infinite; }`;
+            document.head.appendChild(styleSheet);
 
-            sendMessageBtn.addEventListener('click', handleSendMessage);
-            userInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    handleSendMessage();
+
+            // --- 5. Logique du Chatbot ---
+            const chatbotToggle = document.getElementById('chatbot-toggle');
+            const chatbotWindow = document.getElementById('chatbot-window');
+            const chatMessages = document.getElementById('chat-messages');
+            const chatForm = document.getElementById('chat-form');
+            const chatInput = document.getElementById('chat-input');
+
+            // Ouvrir/fermer le chatbot
+            chatbotToggle.addEventListener('click', () => {
+                chatbotWindow.classList.toggle('open');
+                if (chatbotWindow.classList.contains('open')) {
+                    addBotMessage("Bonjour ! Je suis Koncept Assistant. Comment puis-je vous éclairer sur l'IA ?");
                 }
             });
+
+            // Gérer l'envoi de message
+            chatForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const userInput = chatInput.value.trim();
+                if (userInput === '') return;
+
+                addMessage(userInput, 'user');
+                chatInput.value = '';
+
+                // Simuler une réponse du bot
+                setTimeout(() => {
+                    const botResponse = getBotResponse(userInput);
+                    addMessage(botResponse, 'bot');
+                }, 1000);
+            });
+
+            function addMessage(text, sender) {
+                const messageElement = document.createElement('div');
+                messageElement.classList.add('chat-message', sender === 'user' ? 'user-message' : 'bot-message');
+                messageElement.textContent = text;
+                chatMessages.appendChild(messageElement);
+                // Scroll vers le bas
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
             
-            setLanguage(initialLang);
+            function addBotMessage(text) {
+                // S'assurer que le message de bienvenue n'est ajouté qu'une seule fois
+                if (chatMessages.children.length === 0) {
+                     addMessage(text, 'bot');
+                }
+            }
+            
+            // Logique de réponse basique du bot
+            function getBotResponse(userInput) {
+                const u = userInput.toLowerCase();
+
+                if (u.includes('bonjour') || u.includes('salut')) {
+                    return "Bonjour ! En quoi puis-je vous aider concernant l'Intelligence Artificielle ?";
+                }
+                if (u.includes('qu\'est-ce que l\'ia') || u.includes('c\'est quoi l\'ia') || u.includes('définis l\'ia')) {
+                    return "L'Intelligence Artificielle (IA) est un domaine de l'informatique qui vise à créer des machines capables de simuler l'intelligence humaine, comme apprendre, raisonner et percevoir.";
+                }
+                if (u.includes('deep learning') || u.includes('apprentissage profond')) {
+                    return "Le Deep Learning est un sous-domaine du Machine Learning basé sur des réseaux de neurones artificiels avec de nombreuses couches ('profondes'). C'est la technologie derrière les succès comme la reconnaissance d'image ou les IA génératives.";
+                }
+                if (u.includes('machine learning') || u.includes('apprentissage automatique')) {
+                    return "Le Machine Learning est une branche de l'IA où les ordinateurs apprennent à partir de données sans être explicitement programmés. Ils identifient des schémas (patterns) pour faire des prédictions.";
+                }
+                if (u.includes('gpt') || u.includes('ia générative')) {
+                    return "L'IA générative, comme les modèles GPT, est capable de créer du nouveau contenu (texte, images, code...) en s'inspirant des données sur lesquelles elle a été entraînée. C'est une véritable révolution !";
+                }
+                if (u.includes('turing')) {
+                    return "Alan Turing est considéré comme l'un des pères de l'IA. Sa 'machine de Turing' a posé les bases théoriques de l'informatique et son 'Test de Turing' a proposé un moyen d'évaluer l'intelligence d'une machine.";
+                }
+                 if (u.includes('merci')) {
+                    return "De rien ! N'hésitez pas si vous avez d'autres questions.";
+                }
+                
+                return "Je suis un assistant basique. Mes connaissances sont limitées. Essayez des questions comme 'Qu'est-ce que l'IA ?' ou 'Parle-moi du Deep Learning'.";
+            }
         });
     </script>
 </body>
